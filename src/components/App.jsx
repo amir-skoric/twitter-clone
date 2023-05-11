@@ -1,10 +1,11 @@
 //imports
 import SignIn from "./auth/pages/SignIn";
 import SignUp from "./auth/pages/SignUp";
-import Check from "./auth/check";
-import LandingPage from "../components/pages/LandingPage"
+import LandingPage from "../components/pages/LandingPage";
 import { AuthProvider } from "../contexts/AuthContext";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, } from "react-router-dom";
+import PrivateRoute from "./PrivateRoute";
+import AnonymousRoute from "./AnonymousRoute";
 
 export default function App() {
   /* useEffect(() => {
@@ -23,9 +24,16 @@ export default function App() {
       <Router>
         <AuthProvider>
           <Routes>
-            <Route exact path="/" element={ <LandingPage/>}></Route>
-            <Route path="/signup" element={ <SignUp/> }></Route>
-            <Route path="/signin" element={ <SignIn/> }></Route>
+            <Route
+              path="/"
+              element={
+                <PrivateRoute>
+                  <LandingPage />
+                </PrivateRoute>
+              }
+            />
+            <Route path="/signup" element={<AnonymousRoute><SignUp /></AnonymousRoute>}></Route>
+            <Route path="/signin" element={<AnonymousRoute><SignIn /></AnonymousRoute>}></Route>
           </Routes>
         </AuthProvider>
       </Router>

@@ -1,35 +1,39 @@
 //imports
-import { signInWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
-import { auth } from "../../../firebase/config";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../../contexts/AuthContext";
 
 //main function
 const SignIn = () => {
-  // states
+  //states
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState();
+  const { signin } = useAuth();
+  const navigate = useNavigate();
 
-  const signIn = (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
-    //firebases own signin method
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        console.log(userCredential);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
+    try {
+      await signin(email, password);
+      navigate("/");
+    } catch (err) {
+      setError(err);
+    }
+  }
 
   return (
     <div>
-      <form className="flex flex-col space-y-4 p-8"  onSubmit={signIn}>
-        <h1 className="text-xl">Log in to your account</h1>
+      <h1 className="text-xl p-8 pb-0">Log in to your account</h1>
+      <form
+        className="flex flex-col space-y-4 p-8 text-black"
+        onSubmit={handleSubmit}
+      >
         <input
           className="border border-2 p-2"
           type="email"
           placeholder="Enter your e-mail..."
+          required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         ></input>
@@ -37,18 +41,22 @@ const SignIn = () => {
           className="border border-2 p-2"
           type="password"
           placeholder="Enter your password..."
+          required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         ></input>
-        <button
-          className="p-2 mx-auto border border-2 bg-white text-black"
-          type="submit"
-        >
+        <button className="p-2 mx-auto border border-2 bg-white" type="submit">
           Log In
         </button>
+        <div className="text-red-400 text-center">
+          {JSON.stringify(error && error.code)}
+        </div>
       </form>
       <div className="w-100 text-center mt-4">
-        Need an account? <Link className="text-blue-400" to="/signup">Sign up here!</Link>
+        Need an account?{" "}
+        <Link className="text-blue-400" to="/signup">
+          Sign up here!
+        </Link>
       </div>
     </div>
   );
