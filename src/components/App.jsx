@@ -3,9 +3,10 @@ import SignIn from "./auth/pages/SignIn";
 import SignUp from "./auth/pages/SignUp";
 import LandingPage from "../components/pages/LandingPage";
 import { AuthProvider } from "../contexts/AuthContext";
-import { BrowserRouter as Router, Routes, Route, } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
 import AnonymousRoute from "./AnonymousRoute";
+import NotFound from "./pages/NotFound";
 
 export default function App() {
   /* useEffect(() => {
@@ -32,8 +33,23 @@ export default function App() {
                 </PrivateRoute>
               }
             />
-            <Route path="/signup" element={<AnonymousRoute><SignUp /></AnonymousRoute>}></Route>
-            <Route path="/signin" element={<AnonymousRoute><SignIn /></AnonymousRoute>}></Route>
+            <Route
+              path="/signup"
+              element={
+                <AnonymousRoute>
+                  <SignUp />
+                </AnonymousRoute>
+              }
+            ></Route>
+            <Route
+              path="/signin"
+              element={
+                <AnonymousRoute>
+                  <SignIn />
+                </AnonymousRoute>
+              }
+            ></Route>
+            <Route path="*" element={<NotFound />}></Route>
           </Routes>
         </AuthProvider>
       </Router>

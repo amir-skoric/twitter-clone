@@ -4,7 +4,7 @@ import { useAuth } from "../contexts/AuthContext";
 
 const AnonymousRoute = ({ children }) => {
   const { currentUser } = useAuth();
-    return !currentUser ? children : <Navigate to="/"></Navigate>;
+  return !currentUser ? children : <Navigate to="/"></Navigate>;
 };
 
 export default AnonymousRoute;

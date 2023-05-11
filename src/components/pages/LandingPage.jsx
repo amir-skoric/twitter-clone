@@ -2,18 +2,17 @@ import React, { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-
 const LandingPage = () => {
-const navigate = useNavigate();
+  const navigate = useNavigate();
   const [error, setError] = useState();
   const { currentUser, signout } = useAuth();
 
   async function handleSignOut() {
     try {
-        await signout()
-        navigate('/signin')
-    } catch(err) {
-        setError(err)
+      await signout();
+      navigate("/signin");
+    } catch (err) {
+      setError(err);
     }
   }
   return (
