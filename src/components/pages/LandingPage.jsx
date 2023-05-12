@@ -16,15 +16,15 @@ const LandingPage = () => {
     }
   }
   return (
-    <div className="text-center">
+    <div className="LandingPage text-center">
       <h1>Welcome to Twitter, I think...</h1>
       <div className="text-red-400 text-center">
         {JSON.stringify(error && error.code)}
       </div>
-      <p>Email: {currentUser.email}</p>
+      <p>Display name: {currentUser.displayName}</p>
       <div>
         <button
-          className="p-2 mx-auto border border-2 bg-white text-black"
+          className="p-2 mx-auto border-2 bg-white text-black"
           onClick={handleSignOut}
         >
           Sign Out

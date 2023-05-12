@@ -23,14 +23,14 @@ const SignIn = () => {
   }
 
   return (
-    <div>
+    <div className="SignIn container flex flex-col justify-center min-h-screen">
       <h1 className="text-xl p-8 pb-0">Log in to your account</h1>
       <form
         className="flex flex-col space-y-4 p-8 text-black"
         onSubmit={handleSubmit}
       >
         <input
-          className="border border-2 p-2"
+          className="border-2 p-2"
           type="email"
           placeholder="Enter your e-mail..."
           required
@@ -38,14 +38,14 @@ const SignIn = () => {
           onChange={(e) => setEmail(e.target.value)}
         ></input>
         <input
-          className="border border-2 p-2"
+          className="border-2 p-2"
           type="password"
           placeholder="Enter your password..."
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         ></input>
-        <button className="p-2 mx-auto border border-2 bg-white" type="submit">
+        <button className="p-2 mx-auto border-2 bg-blue-400 text-white w-full" type="submit">
           Log In
         </button>
         <div className="text-red-400 text-center">

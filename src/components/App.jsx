@@ -5,7 +5,6 @@ import LandingPage from "../components/pages/LandingPage";
 import { AuthProvider } from "../contexts/AuthContext";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
-import AnonymousRoute from "./AnonymousRoute";
 import NotFound from "./pages/NotFound";
 
 export default function App() {
@@ -21,35 +20,16 @@ export default function App() {
   }, [toggle]);
 */
   return (
-    <div className="min-h-screen flex flex-col bg-black text-white">
+    <div className="App min-h-screen flex flex-col bg-black text-white">
       <Router>
         <AuthProvider>
           <Routes>
-            <Route
-              path="/"
-              element={
-                <PrivateRoute>
-                  <LandingPage />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/signup"
-              element={
-                <AnonymousRoute>
-                  <SignUp />
-                </AnonymousRoute>
-              }
-            ></Route>
-            <Route
-              path="/signin"
-              element={
-                <AnonymousRoute>
-                  <SignIn />
-                </AnonymousRoute>
-              }
-            ></Route>
-            <Route path="*" element={<NotFound />}></Route>
+            <Route element={<PrivateRoute />}>
+              <Route path="/" element={<LandingPage />} exact />
+            </Route>
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
       </Router>
