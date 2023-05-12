@@ -1,27 +1,25 @@
 import React, { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
 
 const FrontPage = () => {
-  const navigate = useNavigate();
   const [error, setError] = useState();
   const { currentUser, signout } = useAuth();
 
   async function handleSignOut() {
     try {
       await signout();
-      navigate("/signin");
     } catch (err) {
       setError(err);
     }
   }
   return (
-    <div className="FrontPage flex flex-col justify-center p-8 min-h-screen">
-      <h1 className="font-bold text-2xl">Welcome to Twitter 🤥</h1>
+    <div className="FrontPage flex flex-col justify-center items-center p-8 min-h-screen">
+      <h1 className="text-2xl font-bold">Welcome to Twitter 🤫</h1>
+      <p>{currentUser.displayName || currentUser.email} </p>
       <div className="text-red-400 text-center">
         {JSON.stringify(error && error.code)}
       </div>
-      <p>Display name: {currentUser.displayName}</p>
+      <img className="rounded-full h-32 w-32" src={currentUser.photoURL}></img>
       <div>
         <button
           className="p-2 bg-blue-400 text-white w-full mt-4"

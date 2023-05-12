@@ -4,9 +4,13 @@
 @tailwind utilities;
 
 input {
-    @apply focus:outline-none rounded-md
+    @apply focus:outline-none rounded-md text-black bg-white
 }
 
 button {
     @apply rounded-md
+}
+
+* {
+    @apply bg-black text-white
 }

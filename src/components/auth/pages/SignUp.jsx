@@ -1,6 +1,6 @@
 //imports
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth } from "../../../contexts/AuthContext";
 
 //main function
@@ -10,9 +10,11 @@ const SignUp = () => {
   const [displayName, setDisplayName] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [photoURL, setPhotoURL] = useState(
+    "https://firebasestorage.googleapis.com/v0/b/twitter-clone-8a93e.appspot.com/o/defaultProfilePic.png?alt=media&token=8b628d8f-2af3-4d9b-9055-c59b932aa217"
+  );
   const [error, setError] = useState();
-  const { signup, setdisplayname } = useAuth();
-  const navigate = useNavigate();
+  const { signup } = useAuth();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -20,12 +22,10 @@ const SignUp = () => {
       return alert("Passwords do not match!");
     }
     try {
-      await signup(email, password);
-      await setdisplayname(displayName)
-      navigate("/");
+      await signup(email, password, displayName, photoURL);
     } catch (err) {
       setError(err);
-    }
+    } 
   }
 
   return (
@@ -46,8 +46,7 @@ const SignUp = () => {
         <input
           className="border-2 p-2"
           type="text"
-          placeholder="Enter your display name..."
-          required
+          placeholder="Enter your display name... (not required)"
           value={displayName}
           onChange={(e) => setDisplayName(e.target.value)}
         ></input>
@@ -67,7 +66,10 @@ const SignUp = () => {
           value={passwordConfirm}
           onChange={(e) => setPasswordConfirm(e.target.value)}
         ></input>
-        <button className="p-2 mx-auto bg-blue-400 text-white w-full" type="submit">
+        <button
+          className="p-2 mx-auto bg-blue-400 text-white w-full"
+          type="submit"
+        >
           Sign Up
         </button>
         <div className="text-red-400 text-center">

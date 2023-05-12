@@ -4,8 +4,8 @@ import SignUp from "./auth/pages/SignUp";
 import LandingPage from "./pages/FrontPage";
 import { AuthProvider } from "../contexts/AuthContext";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import PrivateRoute from "./PrivateRoute";
-import AnonymousRoute from "./AnonymousRoute";
+import PrivateRoute from "./routes/PrivateRoute";
+import AnonymousRoute from "./routes/AnonymousRoute";
 import NotFound from "./pages/NotFound";
 
 export default function App() {
@@ -21,7 +21,7 @@ export default function App() {
   }, [toggle]);
 */
   return (
-    <div className="App bg-black text-white">
+    <div className="App">
       <Router>
         <AuthProvider>
           <Routes>

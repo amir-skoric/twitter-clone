@@ -1,6 +1,6 @@
 //imports
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth } from "../../../contexts/AuthContext";
 
 //main function
@@ -10,13 +10,11 @@ const SignIn = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState();
   const { signin } = useAuth();
-  const navigate = useNavigate();
 
   async function handleSubmit(e) {
     e.preventDefault();
     try {
       await signin(email, password);
-      navigate("/");
     } catch (err) {
       setError(err);
     }
@@ -45,7 +43,10 @@ const SignIn = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         ></input>
-        <button className="p-2 mx-auto bg-blue-400 text-white w-full" type="submit">
+        <button
+          className="p-2 mx-auto bg-blue-400 text-white w-full"
+          type="submit"
+        >
           Log In
         </button>
         <div className="text-red-400 text-center">
