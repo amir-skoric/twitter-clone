@@ -5,6 +5,7 @@ import LandingPage from "./pages/FrontPage";
 import { AuthProvider } from "../contexts/AuthContext";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
+import AnonymousRoute from "./AnonymousRoute";
 import NotFound from "./pages/NotFound";
 
 export default function App() {
@@ -27,8 +28,10 @@ export default function App() {
             <Route element={<PrivateRoute />}>
               <Route path="/" element={<LandingPage />} exact />
             </Route>
-            <Route path="/signup" element={<SignUp />} />
-            <Route path="/signin" element={<SignIn />} />
+            <Route element={<AnonymousRoute />}>
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/signin" element={<SignIn />} />
+            </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
