@@ -1,7 +1,7 @@
 //imports
 import SignIn from "./auth/pages/SignIn";
 import SignUp from "./auth/pages/SignUp";
-import LandingPage from "../components/pages/LandingPage";
+import LandingPage from "./pages/FrontPage";
 import { AuthProvider } from "../contexts/AuthContext";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
@@ -20,7 +20,7 @@ export default function App() {
   }, [toggle]);
 */
   return (
-    <div className="App min-h-screen flex flex-col bg-black text-white">
+    <div className="App bg-black text-white">
       <Router>
         <AuthProvider>
           <Routes>

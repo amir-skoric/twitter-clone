@@ -29,7 +29,7 @@ const SignUp = () => {
   }
 
   return (
-    <div className="SignUp container flex flex-col justify-center min-h-screen">
+    <div className="SignUp flex flex-col justify-center min-h-screen">
       <h1 className="text-xl p-8 pb-0">Create an account</h1>
       <form
         className="flex flex-col space-y-4 p-8 text-black"
@@ -67,7 +67,7 @@ const SignUp = () => {
           value={passwordConfirm}
           onChange={(e) => setPasswordConfirm(e.target.value)}
         ></input>
-        <button className="p-2 mx-auto border-2 bg-blue-400 text-white w-full" type="submit">
+        <button className="p-2 mx-auto bg-blue-400 text-white w-full" type="submit">
           Sign Up
         </button>
         <div className="text-red-400 text-center">

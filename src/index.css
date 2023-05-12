@@ -2,3 +2,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+input {
+    @apply focus:outline-none rounded-md
+}
+
+button {
+    @apply rounded-md
+}

@@ -23,7 +23,7 @@ const SignIn = () => {
   }
 
   return (
-    <div className="SignIn container flex flex-col justify-center min-h-screen">
+    <div className="SignIn flex flex-col justify-center min-h-screen">
       <h1 className="text-xl p-8 pb-0">Log in to your account</h1>
       <form
         className="flex flex-col space-y-4 p-8 text-black"
@@ -45,7 +45,7 @@ const SignIn = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         ></input>
-        <button className="p-2 mx-auto border-2 bg-blue-400 text-white w-full" type="submit">
+        <button className="p-2 mx-auto bg-blue-400 text-white w-full" type="submit">
           Log In
         </button>
         <div className="text-red-400 text-center">
