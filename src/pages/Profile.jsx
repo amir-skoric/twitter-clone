@@ -9,6 +9,7 @@ const Profile = () => {
   const [error, setError] = useState();
   const { currentUser, signout } = useAuth();
 
+  //function that handles the "signout method" from firebase
   async function handleSignOut() {
     try {
       await signout();
@@ -17,6 +18,7 @@ const Profile = () => {
     }
   }
 
+  //function that submits a new profile pictures into firebase, and then updates it accordingly into the appropriate user
   async function handleSubmit(e) {
     e.preventDefault();
     const file = e.target[0]?.files[0];
