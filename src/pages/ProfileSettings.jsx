@@ -5,7 +5,7 @@ import { updateProfile } from "firebase/auth";
 
 import { useAuth } from "../contexts/AuthContext";
 
-const Profile = () => {
+const ProfileSettings = () => {
   const [error, setError] = useState();
   const { currentUser, signout } = useAuth();
 
@@ -83,4 +83,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default ProfileSettings;

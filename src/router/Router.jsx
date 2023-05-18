@@ -2,7 +2,7 @@
 import SignIn from "../pages/auth/SignIn";
 import SignUp from "../pages/auth/SignUp";
 
-import Profile from "../pages/Profile";
+import ProfileSettings from "../pages/ProfileSettings";
 import Frontpage from "../pages/Frontpage";
 
 import { AuthProvider } from "../contexts/AuthContext";
@@ -11,6 +11,7 @@ import {
   Routes,
   Route,
 } from "react-router-dom";
+
 import PrivateRoute from "../routes/PrivateRoute";
 import AnonymousRoute from "../routes/AnonymousRoute";
 import NotFound from "../pages/NotFound";
@@ -35,7 +36,7 @@ export default function Router() {
           <Route element={<PrivateRoute />}>
             <Route element={<Layout />}>
               <Route path="/" element={<Frontpage />} exact />
-              <Route path="/profile" element={<Profile />} exact />
+              <Route path="/profile" element={<ProfileSettings />} exact />
             </Route>
           </Route>
           <Route element={<AnonymousRoute />}>
