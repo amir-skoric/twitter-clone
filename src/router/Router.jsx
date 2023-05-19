@@ -36,7 +36,7 @@ export default function Router() {
           <Route element={<PrivateRoute />}>
             <Route element={<Layout />}>
               <Route path="/" element={<Frontpage />} exact />
-              <Route path="/profile" element={<ProfileSettings />} exact />
+              <Route path="/settings" element={<ProfileSettings />} exact />
             </Route>
           </Route>
           <Route element={<AnonymousRoute />}>

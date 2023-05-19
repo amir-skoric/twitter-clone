@@ -11,7 +11,7 @@ const Navbar = () => {
       <Link className="rounded-full" to="/">
         <img className="h-12 w-12" src={Logo}></img>
       </Link>
-      <Link className="rounded-full" to="/profile">
+      <Link className="rounded-full" to="/settings">
         <img
           className="h-12 w-12 rounded-full"
           src={currentUser.photoURL}

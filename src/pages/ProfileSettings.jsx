@@ -61,7 +61,7 @@ const ProfileSettings = () => {
           className="rounded-full h-32 w-32 object-cover"
           src={currentUser.photoURL}
         ></img>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="flex flex-col justify-center items-center p-4">
           <input type="file"></input>
           <button
             type="submit"
