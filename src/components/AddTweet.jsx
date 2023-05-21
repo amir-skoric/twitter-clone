@@ -4,8 +4,16 @@ import React, { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { storage } from "../firebase/config";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
-import { addDoc, collection } from "firebase/firestore";
+import {
+  addDoc,
+  updateDoc,
+  doc,
+  collection,
+  getDocs,
+} from "firebase/firestore";
 import { db } from "../firebase/config";
+
+import { v4 as uuidv4 } from "uuid";
 
 const AddTweet = () => {
   //states
@@ -17,9 +25,10 @@ const AddTweet = () => {
   //submit a new tweet
   async function handleSubmit(e) {
     e.preventDefault();
-    const file = e.target[0];
+    const file = e.target[0]?.files[0];
     if (!file) return;
-    const storageRef = ref(storage, `tweets/${currentUser.uid}/`);
+    const random = uuidv4();
+    const storageRef = ref(storage, `tweets/${currentUser.uid}/${random}`);
     const uploadTask = uploadBytesResumable(storageRef, file);
 
     uploadTask.on("state_changed", () => {
@@ -32,16 +41,17 @@ const AddTweet = () => {
       collection(db, "tweets"),
       {
         createdBy: currentUser.uid,
+        date: new Date(),
         tweet: { tweet, tweetImg },
         comments: [],
         likes: [],
       },
       setTweet(""),
-      setTweetImg(""),
-      (err) => {
-        setError(err);
-      }
+      setTweetImg("")
     );
+    (err) => {
+      setError(err);
+    };
   }
 
   return (
@@ -51,8 +61,8 @@ const AddTweet = () => {
         {JSON.stringify(error && error.code)}
       </div>
       <form
-        className="flex flex-col space-y-4 text-white bg-inherit"
         onSubmit={handleSubmit}
+        className="flex flex-col space-y-4 text-white bg-inherit"
       >
         <textarea
           className="border-2 p-2 resize-none"
