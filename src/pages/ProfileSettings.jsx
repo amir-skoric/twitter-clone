@@ -30,9 +30,7 @@ const ProfileSettings = () => {
     const storageRef = ref(storage, `profilePictures/${currentUser.uid}`);
     const uploadTask = uploadBytesResumable(storageRef, file);
 
-    uploadTask.on(
-      "state_changed",
-      () => {
+    uploadTask.on("state_changed", () => {
         getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
           updateProfile(currentUser, {
             photoURL: downloadURL,
@@ -41,6 +39,7 @@ const ProfileSettings = () => {
             profilePic: downloadURL,
           });
           setError(undefined);
+          e.target.value = 
           window.location.reload();
         });
       },
