@@ -1,4 +1,5 @@
 //imports
+// eslint-disable-next-line no-unused-vars
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
@@ -9,7 +10,7 @@ const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState();
-  const { signin, loading } = useAuth();
+  const { signin } = useAuth();
 
   async function handleSubmit(e) {
     e.preventDefault();
