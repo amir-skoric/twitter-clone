@@ -1,7 +1,11 @@
-import React, { useState, useEffect } from "react";
+//imports
+// eslint-disable-next-line no-unused-vars
+import React, { useState } from "react";
 import { storage } from "../firebase/config";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { updateProfile } from "firebase/auth";
+import { updateDoc, doc } from "firebase/firestore";
+import { db } from "../firebase/config";
 
 import { useAuth } from "../contexts/AuthContext";
 
@@ -29,9 +33,12 @@ const ProfileSettings = () => {
     uploadTask.on(
       "state_changed",
       () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+        getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
           updateProfile(currentUser, {
             photoURL: downloadURL,
+          });
+          await updateDoc(doc(db, "users", currentUser.uid), {
+            profilePic: downloadURL,
           });
           setError(undefined);
           window.location.reload();
@@ -51,7 +58,7 @@ const ProfileSettings = () => {
       </p>
       <p>
         <strong>Display Name</strong> <em>(can be empty)</em>:{" "}
-        {currentUser.displayName || currentUser.email}{" "}
+        {currentUser.displayName}{" "}
       </p>
       <div className="text-red-400 text-center">
         {JSON.stringify(error && error.code)}
@@ -61,8 +68,16 @@ const ProfileSettings = () => {
           className="rounded-full h-32 w-32 object-cover"
           src={currentUser.photoURL}
         ></img>
-        <form onSubmit={handleSubmit} className="flex flex-col justify-center items-center p-4">
-          <input type="file"></input>
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col justify-center items-center p-4"
+        >
+          <input
+            className="border-2 p-2"
+            type="file"
+            accept="image/png, image/jpeg"
+            required
+          ></input>
           <button
             type="submit"
             className="p-2 bg-blue-400 text-white w-full mt-4"
@@ -73,7 +88,7 @@ const ProfileSettings = () => {
       </div>
       <div>
         <button
-          className="p-2 bg-blue-400 text-white w-full mt-4"
+          className="p-2 bg-blue-400 text-white w-full mt-44"
           onClick={handleSignOut}
         >
           Sign Out

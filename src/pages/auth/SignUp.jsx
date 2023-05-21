@@ -1,4 +1,5 @@
 //imports
+// eslint-disable-next-line no-unused-vars
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
@@ -10,12 +11,13 @@ const SignUp = () => {
   const [displayName, setDisplayName] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
-  const [photoURL, setPhotoURL] = useState(
-    "https://firebasestorage.googleapis.com/v0/b/twitter-clone-8a93e.appspot.com/o/defaultProfilePic.png?alt=media&token=8b628d8f-2af3-4d9b-9055-c59b932aa217"
+  const [photoURL] = useState(
+    "https://firebasestorage.googleapis.com/v0/b/twitter-clone-8a93e.appspot.com/o/defaultProfilePic.png?alt=media&token=598addef-c6e4-4483-92e4-3e7062de7c5d"
   );
   const [error, setError] = useState();
   const { signup } = useAuth();
 
+  //function that handles submit
   async function handleSubmit(e) {
     e.preventDefault();
     if (password !== passwordConfirm) {
@@ -25,7 +27,7 @@ const SignUp = () => {
       await signup(email, password, displayName, photoURL);
     } catch (err) {
       setError(err);
-    } 
+    }
   }
 
   return (

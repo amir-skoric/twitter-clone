@@ -1,6 +1,8 @@
+//imports
+// eslint-disable-next-line no-unused-vars
 import React from "react";
 import { useAuth } from "../contexts/AuthContext";
-import CRUDTweet from '../components/CRUDTweet'
+import AddTweet from '../components/AddTweet'
 
 const Frontpage = () => {
   const { currentUser } = useAuth();
@@ -9,7 +11,7 @@ const Frontpage = () => {
       <h1 className="text-2xl font-bold mb-4">
         Hello, {currentUser.displayName || currentUser.email}!
       </h1>
-      <CRUDTweet />
+      <AddTweet />
     </div>
   );
 };
