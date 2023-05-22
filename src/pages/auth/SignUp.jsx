@@ -8,7 +8,6 @@ import { useAuth } from "../../contexts/AuthContext";
 const SignUp = () => {
   //states
   const [email, setEmail] = useState("");
-  const [displayName, setDisplayName] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [photoURL] = useState(
@@ -24,7 +23,7 @@ const SignUp = () => {
       return alert("Passwords do not match!");
     }
     try {
-      await signup(email, password, displayName, photoURL);
+      await signup(email, password, photoURL);
     } catch (err) {
       setError(err);
     }
@@ -44,13 +43,6 @@ const SignUp = () => {
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-        ></input>
-        <input
-          className="border-2 p-2"
-          type="text"
-          placeholder="Enter your display name... (not required)"
-          value={displayName}
-          onChange={(e) => setDisplayName(e.target.value)}
         ></input>
         <input
           className="border-2 p-2"

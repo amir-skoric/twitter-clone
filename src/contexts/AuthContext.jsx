@@ -21,17 +21,16 @@ export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  async function signup(email, password, displayName, photoURL) {
+  async function signup(email, password, photoURL) {
     return (
       await createUserWithEmailAndPassword(auth, email, password),
       await setDoc(doc(db, "users", auth.currentUser.uid), {
         id: auth.currentUser.uid,
+        email: auth.currentUser.email,
         followers: [],
         following: [],
-        tweets: [],
       }),
       updateProfile(auth.currentUser, {
-        displayName: displayName,
         photoURL: photoURL,
       }),
       window.location.reload()

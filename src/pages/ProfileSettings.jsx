@@ -28,36 +28,31 @@ const ProfileSettings = () => {
     const file = e.target[0]?.files[0];
     if (!file) return;
     const storageRef = ref(storage, `profilePictures/${currentUser.uid}`);
-    const uploadTask = uploadBytesResumable(storageRef, file);
-
-    uploadTask.on("state_changed", () => {
-        getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-          updateProfile(currentUser, {
-            photoURL: downloadURL,
-          });
-          await updateDoc(doc(db, "users", currentUser.uid), {
-            profilePic: downloadURL,
-          });
-          setError(undefined);
-          e.target.value = 
-          window.location.reload();
+    //upload to auth
+    uploadBytesResumable(storageRef, file).then(() => {
+      getDownloadURL(storageRef).then(async (downloadURL) => {
+        updateProfile(currentUser, {
+          photoURL: downloadURL,
         });
-      },
-      (err) => {
-        setError(err);
-      }
-    );
+        //upload to database
+        await updateDoc(doc(db, "users", currentUser.uid), {
+          profilePic: downloadURL,
+        });
+        setError(undefined);
+        //refresh page to load in new changes
+        window.location.reload();
+      });
+    });
+    (err) => {
+      setError(err);
+    };
   }
 
   return (
-    <div className="Profile flex flex-col justify-center px-8 space-y-4">
+    <div className="ProfileSettings flex flex-col justify-center px-8 space-y-4">
       <h1 className="text-2xl font-bold mb-4">Account Details</h1>
       <p>
         <strong>E-mail:</strong> {currentUser.email}{" "}
-      </p>
-      <p>
-        <strong>Display Name</strong> <em>(can be empty)</em>:{" "}
-        {currentUser.displayName}{" "}
       </p>
       <div className="text-red-400 text-center">
         {JSON.stringify(error && error.code)}

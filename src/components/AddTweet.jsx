@@ -4,58 +4,70 @@ import React, { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { storage } from "../firebase/config";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
-import {
-  addDoc,
-  updateDoc,
-  doc,
-  collection,
-  getDocs,
-} from "firebase/firestore";
+import { addDoc, collection } from "firebase/firestore";
 import { db } from "../firebase/config";
 
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuid } from "uuid";
 
 const AddTweet = () => {
   //states
-  const [tweet, setTweet] = useState("");
-  const [tweetImg, setTweetImg] = useState("");
+  const [tweetTxt, setTweetTxt] = useState("");
   const [error, setError] = useState();
   const { currentUser } = useAuth();
 
   //submit a new tweet
   async function handleSubmit(e) {
     e.preventDefault();
-    const file = e.target[0]?.files[0];
-    if (!file) return;
-    const random = uuidv4();
-    const storageRef = ref(storage, `tweets/${currentUser.uid}/${random}`);
-    const uploadTask = uploadBytesResumable(storageRef, file);
-
-    uploadTask.on("state_changed", () => {
-      getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-        setTweetImg(downloadURL);
-        setError(undefined);
+    let inputFile = document.getElementById("file");
+    const file = inputFile.files[0];
+    //if file exists (image is picked) then add doc with tweetImg
+    if (file) {
+      const random = uuid();
+      const storageRef = await ref(
+        storage,
+        `tweets/${currentUser.uid}${random}`
+      );
+      uploadBytesResumable(storageRef, file).then(() => {
+        getDownloadURL(storageRef).then((downloadURL) => {
+          setError(undefined);
+          //upload to database
+          const dataImg = {
+            createdById: currentUser.uid,
+            createdByEmail: currentUser.email,
+            date: new Date(),
+            tweetTxt: tweetTxt,
+            tweetImg: downloadURL,
+            comments: [],
+            likes: [],
+          };
+          addDoc(collection(db, "tweets"), dataImg);
+        });
       });
-    });
-    await addDoc(
-      collection(db, "tweets"),
-      {
-        createdBy: currentUser.uid,
+      //if file doesnt exist (image isnt picked) then add doc with without tweetimg
+    } else {
+      //upload to database
+      const data = {
+        createdById: currentUser.uid,
+        createdByEmail: currentUser.email,
         date: new Date(),
-        tweet: { tweet, tweetImg },
+        tweetTxt: tweetTxt,
         comments: [],
         likes: [],
-      },
-      setTweet(""),
-      setTweetImg("")
-    );
-    (err) => {
-      setError(err);
-    };
+      };
+      await addDoc(collection(db, "tweets"), data);
+      //add to user document
+    }
+
+    //reset input
+    setTweetTxt(""),
+      (inputFile.value = null),
+      (err) => {
+        setError(err);
+      };
   }
 
   return (
-    <div className="SignUp flex flex-col justify-center ">
+    <div className="AddTweet flex flex-col justify-center ">
       <h2 className="text-xl bg-inherit mb-4">What&apos;s on your mind?</h2>
       <div className="text-red-400 text-center">
         {JSON.stringify(error && error.code)}
@@ -70,13 +82,14 @@ const AddTweet = () => {
           type="text"
           placeholder="Tell the world what you're thinking about!"
           required
-          value={tweet}
-          onChange={(e) => setTweet(e.target.value)}
+          value={tweetTxt}
+          onChange={(e) => setTweetTxt(e.target.value)}
         ></textarea>
         <input
           className="border-2 p-2"
           type="file"
           accept="image/png, image/jpeg"
+          id="file"
         ></input>
         <button
           type="submit"

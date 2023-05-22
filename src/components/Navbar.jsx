@@ -15,7 +15,7 @@ const Navbar = () => {
       </Link>
       <Link className="rounded-full" to="/settings">
         <img
-          className="h-12 w-12 rounded-full"
+          className="h-12 w-12 rounded-full object-cover"
           src={currentUser.photoURL}
         ></img>
       </Link>
