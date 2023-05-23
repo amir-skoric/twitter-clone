@@ -18,17 +18,6 @@ import NotFound from "../pages/NotFound";
 import Layout from "../Layout";
 
 export default function Router() {
-  /* useEffect(() => {
-      setSpinner(true);
-      const getUsers = async () => {
-        const data = await getDocs(usersCollection);
-        setUsers(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-        setSpinner(false);
-      };
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      getUsers();
-    }, [toggle]);
-  */
   return (
     <RouterContainer>
       <AuthProvider>

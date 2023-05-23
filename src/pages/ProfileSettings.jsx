@@ -4,7 +4,14 @@ import React, { useState } from "react";
 import { storage } from "../firebase/config";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { updateProfile } from "firebase/auth";
-import { updateDoc, doc } from "firebase/firestore";
+import {
+  updateDoc,
+  doc,
+  query,
+  collection,
+  where,
+  getDocs,
+} from "firebase/firestore";
 import { db } from "../firebase/config";
 
 import { useAuth } from "../contexts/AuthContext";
@@ -34,12 +41,27 @@ const ProfileSettings = () => {
         updateProfile(currentUser, {
           photoURL: downloadURL,
         });
-        //upload to database
+        //upload to database (user)
         await updateDoc(doc(db, "users", currentUser.uid), {
           profilePic: downloadURL,
         });
+        //update existing tweets with new profile pic
+        const q = await query(
+          collection(db, "tweets"),
+          where("createdById", "==", currentUser.uid)
+        );
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot) return;
+        querySnapshot
+          .forEach(async (doc) => {
+            // doc.data() is never undefined for query doc snapshots
+            const data = (doc.id, " => ", doc.data());
+            await updateDoc(querySnapshot, {
+              profilePic: downloadURL,
+            });
+          },
+          )
         setError(undefined);
-        //refresh page to load in new changes
         window.location.reload();
       });
     });
@@ -57,17 +79,17 @@ const ProfileSettings = () => {
       <div className="text-red-400 text-center">
         {JSON.stringify(error && error.code)}
       </div>
-      <div className="flex flex-col justify-center items-center space-y-4">
+      <div className="flex flex-col justify-center items-center space-y-4 bg-gray-950 p-4 border-2 border-slate-800">
         <img
           className="rounded-full h-32 w-32 object-cover"
           src={currentUser.photoURL}
         ></img>
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col justify-center items-center p-4"
+          className="flex flex-col justify-center items-center p-4 bg-gray-950"
         >
           <input
-            className="border-2 p-2"
+            className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400"
             type="file"
             accept="image/png, image/jpeg"
             required
