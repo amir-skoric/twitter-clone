@@ -3,42 +3,115 @@
 import React, { useState } from "react";
 
 import { useAuth } from "../contexts/AuthContext";
-import { updateDoc, doc, arrayUnion } from "firebase/firestore";
+import { updateDoc, doc, arrayUnion, arrayRemove } from "firebase/firestore";
 import { db } from "../firebase/config";
 
 const Tweet = ({ docs }) => {
   //states
   const [comment, setComment] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState();
   const { currentUser } = useAuth();
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    console.log(docs.likes);
+    try {
+      if (comment) {
+        const commentObj = {
+          createdById: currentUser.uid,
+          createdByEmail: currentUser.email,
+          createdByPhotoURL: currentUser.photoURL,
+          commentTxt: comment,
+        };
+
+        await updateDoc(doc(db, "tweets", docs.id), {
+          comments: arrayUnion(commentObj),
+        });
+      } else {
+        alert("Your comment can't be empty");
+      }
+    } catch (err) {
+      setError(err);
+    }
+    setComment("");
+  }
+
+  //add like
+  async function handleLikeAdd() {
+    try {
+      const like = {
+        like: currentUser.uid,
+      };
+      await updateDoc(doc(db, "tweets", docs.id), {
+        likes: arrayUnion(like),
+      });
+    } catch (err) {
+      setError(err);
+    }
+  }
+
+  //remove like
+  async function handleLikeDelete() {
+    try {
+      const like = {
+        like: currentUser.uid,
+      };
+      await updateDoc(doc(db, "tweets", docs.id), {
+        likes: arrayRemove(like),
+      });
+    } catch (err) {
+      setError(err);
+    }
+  }
+
+  function likeButton() {
+    if (!docs.likes.some((e) => e.like === currentUser.uid)) {
+      return (
+        <button onClick={handleLikeAdd}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="32"
+            height="32"
+            fill="currentColor"
+            className="bg-inherit"
+            viewBox="0 0 16 16"
+          >
+            {" "}
+            <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z" />{" "}
+          </svg>
+        </button>
+      );
+    } else {
+      return (
+        <button onClick={handleLikeDelete}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="32"
+            height="32"
+            fill="red"
+            className="bg-inherit"
+            viewBox="0 0 16 16"
+          >
+            {" "}
+            <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z" />{" "}
+          </svg>
+        </button>
+      );
+    }
+  }
 
   //function that renders the tweetimg conditionally (if it exists or not)
   function imgConditionalRender() {
     if (!docs.tweetImg) {
       return;
     } else {
-      return <img src={docs.tweetImg} className="object-cover h-80 w-80"></img>;
+      return (
+        <img
+          src={docs.tweetImg}
+          className="object-cover h-80 w-80 border-2 border-slate-900"
+        ></img>
+      );
     }
-  }
-
-  async function handleSubmit(e) {
-    e.preventDefault();
-    try {
-      const commentObj = {
-        createdById: currentUser.uid,
-        createdByEmail: currentUser.email,
-        createdByPhotoURL: currentUser.photoURL,
-        commentTxt: comment,
-      };
-
-      await updateDoc(doc(db, "tweets", docs.id), {
-        comments: arrayUnion(commentObj),
-      });
-    } catch (err) {
-      setError(err);
-    }
-    console.log(comment);
-    setComment("");
   }
 
   //function that renders the comments if they exist or not
@@ -49,8 +122,14 @@ const Tweet = ({ docs }) => {
       return (
         <div className="bg-inherit">
           {docs.comments.map((comments, index) => (
-            <div key={index} className="bg-inherit flex flex-row mb-4 items-center space-x-4">
-              <img src={comments.createdByPhotoURL} className="h-10 w-10 rounded-full"></img>
+            <div
+              key={index}
+              className="bg-inherit flex flex-row mt-4 items-center space-x-4"
+            >
+              <img
+                src={comments.createdByPhotoURL}
+                className="h-10 w-10 rounded-full"
+              ></img>
               <div className="bg-inherit">
                 <p className="bg-inherit font-bold">
                   {comments.createdByEmail}
@@ -73,24 +152,15 @@ const Tweet = ({ docs }) => {
         ></img>
         <p className="bg-inherit">{docs.createdByEmail}</p>
       </div>
+      <div className="text-red-400 text-center mt-8">
+        {JSON.stringify(error && error.code)}
+      </div>
       <div className="flex flex-col mt-4 justify-center bg-inherit">
         <p className="mb-8 bg-inherit font-thin">{docs.tweetTxt}</p>
         {imgConditionalRender()}
       </div>
       <div className="flex flex-col justify-center items-center bg-inherit mt-6">
-        <button>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="32"
-            height="32"
-            fill="currentColor"
-            className="bg-inherit"
-            viewBox="0 0 16 16"
-          >
-            {" "}
-            <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z" />{" "}
-          </svg>
-        </button>
+        {likeButton()}
         <p className="bg-inherit">{docs.likes.length}</p>
       </div>
       <div className="bg-inherit mt-8">
