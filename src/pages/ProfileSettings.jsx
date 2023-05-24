@@ -11,6 +11,7 @@ import {
   collection,
   where,
   getDocs,
+  arrayUnion,
 } from "firebase/firestore";
 import { db } from "../firebase/config";
 
@@ -45,6 +46,7 @@ const ProfileSettings = () => {
         await updateDoc(doc(db, "users", currentUser.uid), {
           profilePic: downloadURL,
         });
+
         //update existing tweets with new profile pic
         const q = await query(
           collection(db, "tweets"),
@@ -52,15 +54,12 @@ const ProfileSettings = () => {
         );
         const querySnapshot = await getDocs(q);
         if (!querySnapshot) return;
-        querySnapshot
-          .forEach(async (doc) => {
-            // doc.data() is never undefined for query doc snapshots
-            const data = (doc.id, " => ", doc.data());
-            await updateDoc(querySnapshot, {
-              profilePic: downloadURL,
-            });
-          },
-          )
+        querySnapshot.forEach(async (doc) => {
+          await updateDoc(querySnapshot, {
+            profilePic: downloadURL,
+          });
+        });
+
         setError(undefined);
         window.location.reload();
       });

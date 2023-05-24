@@ -1,6 +1,6 @@
 //imports
 import React, { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase/config";
 import Tweet from "../components/Tweet";
 import LoadingTweets from "../components/loading/LoadingTweets";
@@ -9,53 +9,46 @@ const AllTweets = () => {
   const [docs, setDocs] = useState([]);
   const [error, setError] = useState();
   const [loading, setLoading] = useState(false);
-  
-  const loadingSpinner = () => {
-    if (loading) return <LoadingTweets />;
-  };
-
-  const noTweets = () => {
-    if (!docs[0]) {
-      return (
-        <div>
-          <p className="my-4">Nothing to see here...</p>
-        </div>
-      );
-    }
-  };
-
-  const res = [];
 
   useEffect(() => {
-      const getTweets = async () => {
+    const getTweets = () => {
+      try {
         setLoading(true);
-        try {
-          const querySnapshot = await getDocs(collection(db, "tweets"));
-          querySnapshot.forEach((tweet) => {
+        const querySnapshot = collection(db, "tweets");
+        const unsub = onSnapshot(querySnapshot, (snapshot) => {
+          const res = [];
+          snapshot.forEach((tweet) => {
             res.push({
               id: tweet.id,
               ...tweet.data(),
             });
           });
-          setDocs([...res]);
-          console.log(...res)
+          setDocs(res);
           setLoading(false);
-        } catch (err) {
-          setError(err);
-        }
-      };
-      getTweets();
+        });
+        return () => unsub();
+      } catch (err) {
+        setError(err);
+      }
+    };
+    getTweets();
   }, []);
 
   return (
     <div>
-      <h1 className="font-bold text-xl mt-16">Public feed</h1>
-      {loadingSpinner()}
-      {noTweets()}
-      {!loading && docs.map((docs) => <Tweet key={docs.id} docs={docs} />)}
-      <div className="text-red-400 text-center">
+      <h1 className="font-bold text-xl mt-16">Public Feed</h1>
+      <div className="text-red-400 text-center mt-8">
         {JSON.stringify(error && error.code)}
       </div>
+      {loading && <LoadingTweets />}
+      {docs.length === 0 && (
+        <>
+          <div>
+            <p className="my-4">Nothing to see here...</p>
+          </div>
+        </>
+      )}
+      {!loading && docs.map((docs) => <Tweet key={docs.id} docs={docs} />)}
     </div>
   );
 };

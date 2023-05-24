@@ -1,10 +1,9 @@
 //imports
 // eslint-disable-next-line no-unused-vars
-import React from "react";
+import React, {useState} from "react";
 import { useAuth } from "../contexts/AuthContext";
 import AddTweet from "../components/AddTweet";
 import AllTweets from "../services/AllTweets";
-import Tweet from "../components/Tweet";
 
 const Frontpage = () => {
   const { currentUser } = useAuth();
