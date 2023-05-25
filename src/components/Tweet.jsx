@@ -15,7 +15,6 @@ const Tweet = ({ allTweets }) => {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    console.log(allTweets.likes);
     try {
       if (comment) {
         const commentObj = {

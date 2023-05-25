@@ -38,10 +38,10 @@ export function TweetProvider({ children }) {
     getAllTweets();
   }, []);
 
-const value = {
+  const value = {
     allTweets,
-    loading
-}
+    loading,
+  };
 
   return (
     <TweetContext.Provider value={value}>{children}</TweetContext.Provider>

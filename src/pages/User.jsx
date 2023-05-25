@@ -30,7 +30,6 @@ const User = () => {
             });
           });
           setTweetsByUser(res);
-          console.log(res);
           setLoading(false);
         });
         return () => unsub();
@@ -44,7 +43,10 @@ const User = () => {
   return (
     <div className="User flex flex-col px-8 space-y-4 my-8">
       <div className="flex flex-col justify-center items-center space-y-4 mb-8">
-        <img src={state.allTweets.createdByPhotoURL} className="rounded-full h-32 w-32 object-cover"></img>
+        <img
+          src={state.allTweets.createdByPhotoURL}
+          className="rounded-full h-32 w-32 object-cover"
+        ></img>
         <h2 className="text-xl">{state.allTweets.createdByEmail} </h2>
         <p>Tweets: {tweetsByUser.length}</p>
       </div>
