@@ -19,7 +19,10 @@ const AllTweets = () => {
           </div>
         </>
       )}
-      {!loading && allTweets.map((allTweets) => <Tweet key={allTweets.id} allTweets={allTweets} />)}
+      {!loading &&
+        allTweets.map((allTweets) => (
+          <Tweet key={allTweets.id} allTweets={allTweets} />
+        ))}
     </div>
   );
 };
