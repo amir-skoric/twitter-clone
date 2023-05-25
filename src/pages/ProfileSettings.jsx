@@ -11,7 +11,6 @@ import {
   collection,
   where,
   getDocs,
-  arrayUnion,
 } from "firebase/firestore";
 import { db } from "../firebase/config";
 

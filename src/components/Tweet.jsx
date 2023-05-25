@@ -1,12 +1,13 @@
 //imports
 // eslint-disable-next-line no-unused-vars
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 import { useAuth } from "../contexts/AuthContext";
 import { updateDoc, doc, arrayUnion, arrayRemove } from "firebase/firestore";
 import { db } from "../firebase/config";
 
-const Tweet = ({ docs }) => {
+const Tweet = ({ allTweets }) => {
   //states
   const [comment, setComment] = useState("");
   const [error, setError] = useState();
@@ -14,7 +15,7 @@ const Tweet = ({ docs }) => {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    console.log(docs.likes);
+    console.log(allTweets.likes);
     try {
       if (comment) {
         const commentObj = {
@@ -24,7 +25,7 @@ const Tweet = ({ docs }) => {
           commentTxt: comment,
         };
 
-        await updateDoc(doc(db, "tweets", docs.id), {
+        await updateDoc(doc(db, "tweets", allTweets.id), {
           comments: arrayUnion(commentObj),
         });
       } else {
@@ -42,7 +43,7 @@ const Tweet = ({ docs }) => {
       const like = {
         like: currentUser.uid,
       };
-      await updateDoc(doc(db, "tweets", docs.id), {
+      await updateDoc(doc(db, "tweets", allTweets.id), {
         likes: arrayUnion(like),
       });
     } catch (err) {
@@ -56,7 +57,7 @@ const Tweet = ({ docs }) => {
       const like = {
         like: currentUser.uid,
       };
-      await updateDoc(doc(db, "tweets", docs.id), {
+      await updateDoc(doc(db, "tweets", allTweets.id), {
         likes: arrayRemove(like),
       });
     } catch (err) {
@@ -65,7 +66,7 @@ const Tweet = ({ docs }) => {
   }
 
   function likeButton() {
-    if (!docs.likes.some((e) => e.like === currentUser.uid)) {
+    if (!allTweets.likes.some((e) => e.like === currentUser.uid)) {
       return (
         <button onClick={handleLikeAdd}>
           <svg
@@ -102,12 +103,12 @@ const Tweet = ({ docs }) => {
 
   //function that renders the tweetimg conditionally (if it exists or not)
   function imgConditionalRender() {
-    if (!docs.tweetImg) {
+    if (!allTweets.tweetImg) {
       return;
     } else {
       return (
         <img
-          src={docs.tweetImg}
+          src={allTweets.tweetImg}
           className="object-cover h-80 w-80 border-2 border-slate-900"
         ></img>
       );
@@ -116,26 +117,29 @@ const Tweet = ({ docs }) => {
 
   //function that renders the comments if they exist or not
   function commentsConditionalRender() {
-    if (docs.comments.length === 0) {
+    if (allTweets.comments.length === 0) {
       return <p className="bg-inherit">No comments</p>;
     } else {
       return (
         <div className="bg-inherit">
-          {docs.comments.map((comments, index) => (
-            <div
-              key={index}
-              className="bg-inherit flex flex-row mt-4 items-center space-x-4"
-            >
-              <img
-                src={comments.createdByPhotoURL}
-                className="h-10 w-10 rounded-full"
-              ></img>
-              <div className="bg-inherit">
-                <p className="bg-inherit font-bold">
-                  {comments.createdByEmail}
-                </p>
-                <p className="bg-inherit">{comments.commentTxt}</p>
-              </div>
+          {allTweets.comments.map((comments, index) => (
+            <div key={index}>
+              <Link
+                className="bg-gray-950 flex flex-row mt-8 items-center space-x-4"
+                to={`/user/${allTweets.createdById}`}
+                state={{ allTweets }}
+              >
+                <img
+                  src={comments.createdByPhotoURL}
+                  className="h-10 w-10 rounded-full"
+                ></img>
+                <div className="bg-inherit">
+                  <p className="bg-inherit font-bold">
+                    {comments.createdByEmail}
+                  </p>
+                  <p className="bg-inherit">{comments.commentTxt}</p>
+                </div>
+              </Link>
             </div>
           ))}
         </div>
@@ -145,27 +149,33 @@ const Tweet = ({ docs }) => {
 
   return (
     <div className="Tweet flex flex-col p-4 border-2 border-slate-800 my-8 bg-gray-950">
-      <div className="flex flex-row items-center space-x-4 border-slate-600 border-b-2 border-spacing-y-2 pb-4 bg-inherit">
-        <img
-          src={docs.createdByPhotoURL}
-          className="h-12 w-12 rounded-full object-cover"
-        ></img>
-        <p className="bg-inherit">{docs.createdByEmail}</p>
+      <div>
+        <Link
+          to={`/user/${allTweets.createdById}`}
+          state={{ allTweets }}
+          className="flex flex-row items-center space-x-4 border-slate-600 border-b-2 border-spacing-y-2 pb-4 bg-gray-950"
+        >
+          <img
+            src={allTweets.createdByPhotoURL}
+            className="h-12 w-12 rounded-full object-cover"
+          ></img>
+          <p className="bg-inherit">{allTweets.createdByEmail}</p>
+        </Link>
       </div>
       <div className="text-red-400 text-center mt-8">
         {JSON.stringify(error && error.code)}
       </div>
       <div className="flex flex-col mt-4 justify-center bg-inherit">
-        <p className="mb-8 bg-inherit font-thin">{docs.tweetTxt}</p>
+        <p className="mb-8 bg-inherit font-thin">{allTweets.tweetTxt}</p>
         {imgConditionalRender()}
       </div>
       <div className="flex flex-col justify-center items-center bg-inherit mt-6">
         {likeButton()}
-        <p className="bg-inherit">{docs.likes.length}</p>
+        <p className="bg-inherit">{allTweets.likes.length}</p>
       </div>
       <div className="bg-inherit mt-8">
         <p className="bg-inherit font-bold">Date</p>
-        <p className="bg-inherit italic">{docs.date}</p>
+        <p className="bg-inherit italic">{allTweets.date}</p>
       </div>
       <div className="bg-gray-950 space-y-4 mt-4">
         <h1 className="text-lg font-bold bg-inherit underline underline-offset-4">
