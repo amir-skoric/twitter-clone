@@ -26,6 +26,7 @@ Prerequisites/Get Started
 
 
 ```bash
+  git clone https://github.com/amir-skoric/twitter-clone.git
   npm install
   cd twitter-clone
 ```
