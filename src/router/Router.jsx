@@ -8,8 +8,6 @@ import Frontpage from "../pages/Frontpage";
 import { AuthProvider } from "../contexts/AuthContext";
 import { TweetProvider } from "../contexts/TweetContext";
 
-import { useTweet } from "../contexts/TweetContext";
-
 import {
   BrowserRouter as RouterContainer,
   Routes,

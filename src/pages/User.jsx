@@ -39,6 +39,7 @@ const User = () => {
     };
     getTweetsByUser();
   }, []);
+  
 
   return (
     <div className="User flex flex-col px-8 space-y-4 my-8">
@@ -48,7 +49,7 @@ const User = () => {
           className="rounded-full h-32 w-32 object-cover"
         ></img>
         <h2 className="text-xl">{state.allTweets.createdByEmail} </h2>
-        <p>Tweets: {tweetsByUser.length}</p>
+        <p><strong>Tweets:</strong> {tweetsByUser.length}</p>
       </div>
       <h1 className="font-bold text-xl mt-16">Tweets</h1>
       {loading && <LoadingTweets />}

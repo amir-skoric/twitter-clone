@@ -11,7 +11,7 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [photoURL] = useState(
-    "https://firebasestorage.googleapis.com/v0/b/twitter-clone-8a93e.appspot.com/o/defaultProfilePic.png?alt=media&token=598addef-c6e4-4483-92e4-3e7062de7c5d"
+    "https://firebasestorage.googleapis.com/v0/b/twitter-clone-8a93e.appspot.com/o/defaultProfilePic.png?alt=media&token=413e616a-5940-4007-813e-22b4827aaf46"
   );
   const [error, setError] = useState();
   const { signup } = useAuth();

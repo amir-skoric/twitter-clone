@@ -89,8 +89,8 @@ const AddTweet = () => {
             date: date,
             tweetTxt: tweetTxt,
             tweetImg: downloadURL,
-            comments: [],
             likes: [],
+            comments: []
           };
           addDoc(collection(db, "tweets"), dataImg);
           setLoading(false);

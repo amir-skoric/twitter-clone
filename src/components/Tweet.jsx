@@ -2,9 +2,18 @@
 // eslint-disable-next-line no-unused-vars
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { storage } from "../firebase/config";
+import { deleteObject, ref } from "firebase/storage";
 
 import { useAuth } from "../contexts/AuthContext";
-import { updateDoc, doc, arrayUnion, arrayRemove } from "firebase/firestore";
+import {
+  updateDoc,
+  doc,
+  getDoc,
+  deleteDoc,
+  arrayUnion,
+  arrayRemove,
+} from "firebase/firestore";
 import { db } from "../firebase/config";
 
 const Tweet = ({ allTweets }) => {
@@ -13,6 +22,7 @@ const Tweet = ({ allTweets }) => {
   const [error, setError] = useState();
   const { currentUser } = useAuth();
 
+  //add comment
   async function handleSubmit(e) {
     e.preventDefault();
     try {
@@ -39,9 +49,7 @@ const Tweet = ({ allTweets }) => {
   //add like
   async function handleLikeAdd() {
     try {
-      const like = {
-        like: currentUser.uid,
-      };
+      const like = currentUser.uid;
       await updateDoc(doc(db, "tweets", allTweets.id), {
         likes: arrayUnion(like),
       });
@@ -53,9 +61,7 @@ const Tweet = ({ allTweets }) => {
   //remove like
   async function handleLikeDelete() {
     try {
-      const like = {
-        like: currentUser.uid,
-      };
+      const like = currentUser.uid;
       await updateDoc(doc(db, "tweets", allTweets.id), {
         likes: arrayRemove(like),
       });
@@ -64,8 +70,29 @@ const Tweet = ({ allTweets }) => {
     }
   }
 
+  //delete tweet
+  async function handleDeleteTweet() {
+    //tweet img converter (takes the photoURL link and turns it into a usable reference)
+    const tweetImg = allTweets.tweetImg?.substring(151, 87);
+
+    if (tweetImg) {
+      const storageRef = ref(storage, `tweets/${tweetImg}`);
+      await deleteObject(storageRef)
+        .then(() => {
+          deleteDoc(doc(db, "tweets", allTweets.id));
+        })
+        .catch((err) => {
+          setError(err);
+          console.log(err);
+        });
+    } else {
+      deleteDoc(doc(db, "tweets", allTweets.id));
+    }
+  }
+
+  //like button conditionally change fill if the current user logged in has liked the tweet
   function likeButton() {
-    if (!allTweets.likes.some((e) => e.like === currentUser.uid)) {
+    if (!allTweets.likes.includes(currentUser.uid)) {
       return (
         <button onClick={handleLikeAdd}>
           <svg
@@ -120,25 +147,25 @@ const Tweet = ({ allTweets }) => {
       return <p className="bg-inherit">No comments</p>;
     } else {
       return (
-        <div className="bg-inherit">
+        <div className="bg-inherit flex flex-col">
           {allTweets.comments.map((comments, index) => (
-            <div key={index}>
-              <Link
-                className="bg-gray-950 flex flex-row mt-8 items-center space-x-4"
-                to={`/user/${allTweets.createdById}`}
-                state={{ allTweets }}
-              >
-                <img
-                  src={comments.createdByPhotoURL}
-                  className="h-10 w-10 rounded-full"
-                ></img>
-                <div className="bg-inherit">
+            <div
+              key={index}
+              className="flex items-center space-x-4 my-4 bg-inherit"
+            >
+              <img
+                src={comments.createdByPhotoURL}
+                className="h-10 w-10 rounded-full"
+              ></img>
+
+              <div className="flex flex-row space-x-4 bg-inherit items-center">
+                <div className="bg-inherit flex flex-col">
                   <p className="bg-inherit font-bold">
                     {comments.createdByEmail}
                   </p>
                   <p className="bg-inherit">{comments.commentTxt}</p>
                 </div>
-              </Link>
+              </div>
             </div>
           ))}
         </div>
@@ -146,20 +173,102 @@ const Tweet = ({ allTweets }) => {
     }
   }
 
+  //delete tweet button conditional
+  function deleteButtonConditionallyRender() {
+    if (allTweets.createdById === currentUser.uid) {
+      return (
+        <div className="bg-inherit">
+          <button
+            onClick={() => {
+              const confirmBox = window.confirm(
+                "Are you sure you want to delete this tweet?"
+              );
+              if (confirmBox === true) {
+                {
+                  handleDeleteTweet();
+                }
+              }
+            }}
+            className="p-2 bg-red-600 text-white w-full mt-4"
+          >
+            Delete Tweet
+          </button>
+        </div>
+      );
+    }
+  }
+
+  //follow button conditional
+  function followButtonConditionallyRender() {
+    const getUser = async () => {
+      const docRef = doc(db, "users", allTweets.createdById);
+      const docSnap = await getDoc(docRef);
+      const user = docSnap.data();
+      const userData = user.id;
+      return userData;
+    };
+    if (allTweets.createdById === currentUser.uid) {
+      return;
+    } else if (currentUser.uid != getUser()) {
+      return (
+        <button onClick={follow} className="bg-blue-400 text-white px-4 py-2">
+          Follow
+        </button>
+      );
+    } else {
+      return (
+        <button onClick={unfollow} className="bg-blue-400 text-white px-4 py-2">
+          Unfollow
+        </button>
+      );
+    }
+  }
+
+  //follow function
+  async function follow() {
+    try {
+      const follow = allTweets.createdById;
+      await updateDoc(doc(db, "users", currentUser.id), {
+        following: arrayUnion(follow),
+      });
+      await updateDoc(doc(db, "users", allTweets.createdById), {
+        followers: arrayUnion(follow),
+      });
+    } catch (err) {
+      setError(err);
+    }
+  }
+
+  //unfollow function
+  async function unfollow() {
+    try {
+      const follow = allTweets.createdById;
+      await updateDoc(doc(db, "users", currentUser.id), {
+        following: arrayRemove(follow),
+      });
+      await updateDoc(doc(db, "users", allTweets.createdById), {
+        followers: arrayRemove(follow),
+      });
+    } catch (err) {
+      setError(err);
+    }
+  }
+
   return (
     <div className="Tweet flex flex-col p-4 border-2 border-slate-800 my-8 bg-gray-950">
-      <div>
+      <div className="flex flex-row items-center justify-center space-x-4 border-slate-600 border-b-2 border-spacing-y-2 pb-4 bg-gray-950">
         <Link
+          className="bg-inherit"
           to={`/user/${allTweets.createdById}`}
           state={{ allTweets }}
-          className="flex flex-row items-center space-x-4 border-slate-600 border-b-2 border-spacing-y-2 pb-4 bg-gray-950"
         >
           <img
             src={allTweets.createdByPhotoURL}
             className="h-12 w-12 rounded-full object-cover"
           ></img>
-          <p className="bg-inherit">{allTweets.createdByEmail}</p>
         </Link>
+        <p className="bg-inherit">{allTweets.createdByEmail}</p>
+        {followButtonConditionallyRender()}
       </div>
       <div className="text-red-400 text-center mt-8">
         {JSON.stringify(error && error.code)}
@@ -176,6 +285,7 @@ const Tweet = ({ allTweets }) => {
         <p className="bg-inherit font-bold">Date</p>
         <p className="bg-inherit italic">{allTweets.date}</p>
       </div>
+      {deleteButtonConditionallyRender()}
       <div className="bg-gray-950 space-y-4 mt-4">
         <h1 className="text-lg font-bold bg-inherit underline underline-offset-4">
           Comments
@@ -191,7 +301,7 @@ const Tweet = ({ allTweets }) => {
             value={comment}
             onChange={(e) => setComment(e.target.value)}
           ></input>
-          <button type="submit" className="mx-auto bg-blue-400 text-white px-4">
+          <button type="submit" className="bg-blue-400 text-white px-4">
             Submit
           </button>
         </form>
